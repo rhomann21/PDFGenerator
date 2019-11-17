@@ -4,6 +4,7 @@ const axios = require("axios");
 const inquirer = require("inquirer");
 const HTML5ToPDF = require("html5-to-pdf");
 const path = require("path");
+let starCount = 0;
 inquirer
   .prompt({
     message: "Enter your GitHub username:",
@@ -19,38 +20,43 @@ inquirer
       const repos = res.data.public_repos;
       const blog = res.data.blog;
       const repoName = res.data.login;
-      return htmlStr = `
-      <!DOCTYPE html>
-      <html lang="en">
-      <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <meta http-equiv="X-UA-Compatible" content="ie=edge">
-            <link rel="stylesheet" type="text/css" href="./style.css" />
-            <title>${repoName}</title>
-      </head>
-      <body>
-            <div class="contentWrapper">
-            <div class="name"><h1>${name}</h1></div>
-            <div><img src="${pic}" height="200" width="200"></div>
-            <div><h3>${bio}</h3></div>
-            <div><h3>${repos}</h3></div>
-            <div><h3>${blog}</h3></div>
-            </div>
-            </body>
-      </html>
-`;
-    })
-    .then(htmlStr => {
-      fs.writeFile("index.html", htmlStr, () => {
-      });
-    })
-    .then(() => {
+      const qStarredURL = `https://api.github.com/users/${username}/repos`;
+
+
+      axios.get(qStarredURL).then(res => {
+
+          res.data.forEach(element => {
+              starCount += element.stargazers_count;
+          })
+
+          htmlGen = `
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <meta http-equiv="X-UA-Compatible" content="ie=edge">
+                <link rel="stylesheet" type="text/css" href="./style.css" />
+                <title>${repoName}</title>
+          </head>
+          <body>
+                <div class="contentWrapper">
+                <div class="name"><h1>${name}</h1></div>
+                <div><img src="${pic}" height="200" width="200"></div>
+                <div><h3>${bio}</h3></div>
+                <div><h3>${repos}</h3></div>
+                <div><h3>${blog}</h3></div>
+                </div>
+                </body>
+          </html>`
+
+
+      fs.writeFile(`${username}.html`, htmlGen, () => {
       /* read the file from filesystem */
       /* convert to pdf */
       const createPDF = async () => {
         const html5ToPDF = new HTML5ToPDF({
-          inputPath: path.join(__dirname, `./index.html`),
+          inputPath: path.join(__dirname, `./${username}.html`),
           outputPath: path.join(__dirname, `./${username}.pdf`),
           include: [
             path.join(__dirname, `./style.css`)
@@ -63,6 +69,8 @@ inquirer
         console.log("DONE");
         process.exit(0);
       };
-    return { html: htmlStr, pdf: createPDF() }
+    return { html: htmlGen, pdf: createPDF() }
     });
+  });
+});
   });
