@@ -29,7 +29,7 @@ inquirer
               starCount += element.stargazers_count;
           })
 
-          htmlGen = `
+          htmlStr = `
           <!DOCTYPE html>
           <html lang="en">
           <head>
@@ -51,7 +51,7 @@ inquirer
           </html>`
 
 
-      fs.writeFile(`${username}.html`, htmlGen, () => {
+      fs.writeFile(`${username}.html`, htmlStr, () => {
       /* read the file from filesystem */
       /* convert to pdf */
       const createPDF = async () => {
@@ -69,7 +69,7 @@ inquirer
         console.log("DONE");
         process.exit(0);
       };
-    return { html: htmlGen, pdf: createPDF() }
+    return { html: htmlStr, pdf: createPDF() }
     });
   });
 });
