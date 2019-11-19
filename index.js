@@ -27,10 +27,10 @@ inquirer
       const following = res.data.following;
       const location = res.data.location;
       const repoName = res.data.html_url;
-      const qStarredURL = `https://api.github.com/users/${username}/repos`;
+      const stars = `https://api.github.com/users/${username}/repos`;
 
 
-      axios.get(qStarredURL).then(res => {
+      axios.get(stars).then(res => {
 
           res.data.forEach(element => {
               starCount += element.stargazers_count;

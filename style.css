@@ -3,6 +3,11 @@
     text-align: center;
 }
 
+
 .name {
     display: inline-block;
+}
+
+.pic {
+    border: 2px solid black;
 }
